@@ -1,42 +1,136 @@
+@if (isLoading) {
+<div class="page-loader">
+  <img class="page-loader__icon" src="/images/loader-icon.svg" alt="Загрузка страницы">
+</div>
+} @else {
 <header class="header">
   <div class="header__top">
-    <a href="/" class="logo">
-      <img src="/images/logo-mount-icon.svg" class="logo__img" alt="Логотип в форме горы">
-      <span class="logo__text">{{ companyName }}</span>
-    </a>
-    <nav class="nav">
-      <ul class="nav__list">
-        <li><a href="/">Главная</a></li>
-        <li><a href="/">Про гида</a></li>
-        <li><a href="/">Программа тура</a></li>
-        <li><a href="/">Стоимость</a></li>
-        <li><a href="/">Блог</a></li>
-        <li><a href="/">Контакты</a></li>
-      </ul>
-    </nav>
-    <a href="/" class="header__top-btn">Консультация</a>
+      <a href="/" class="logo">
+        <img src="/images/logo-mount-icon.svg" class="logo__img" alt="Логотип в форме горы">
+        <span class="logo__text">{{ companyName }}</span>
+      </a>
+      <nav class="nav">
+        <ul class="nav__list">
+          <li><a href="/">Главная</a></li>
+          <li><a href="/">Про гида</a></li>
+          <li><a href="/">Программа тура</a></li>
+          <li><a href="/">Стоимость</a></li>
+          <li><a href="/">Блог</a></li>
+          <li><a href="/">Контакты</a></li>
+        </ul>
+      </nav>
+      <div class="header__actions">
+        <a href="/" class="header__top-btn">Консультация</a>
+        <div class="header__widget">
+          @if (isDateVisible) {
+          <time class="header__date">
+            {{ currentDate }}
+          </time>
+          } @else {
+          <div class="header__counter">
+            <button class="header__counter-btn" type="button" (click)="decrementCount()" [disabled]="clickCount === 0" aria-label="Уменьшить счётчик">−</button>
+            <span class="header__counter-value">
+              {{ clickCount }}
+            </span>        
+            <button class="header__counter-btn" type="button" (click)="incrementCount()" aria-label="Увеличить счётчик">+</button>
+          </div>
+          } 
+          <button class="header__toggle-btn" type="button" (click)="toggleHeaderWidget()">{{ isDateVisible ? 'Показать кликер' : 'Показать дату' }}</button>
+        </div>
+      </div>
   </div>
   <div class="header__bottom">
-    <h1 class="header__bottom-slogan">Насладись прогулкой в горах<br>с командой единомышленников</h1>
-    <form class="tour__search">
-      <div class="tour__search-field">
-        <button class="tour__search-select" type="button">Локация для тура<img src="/images/arrow-down-icon.svg"></button>
-        <p>выберите из списка</p>
+      <h1 class="header__bottom-slogan">Насладись прогулкой в горах<br>с командой единомышленников</h1>
+      <form class="tour__search" (ngSubmit)="chooseTour()">
+        <div class="tour__search-field">
+          <select class="tour__search-select" name="location" [(ngModel)]="selectedLocation">
+            <option value="" disabled>Локация для тура</option>
+            <option value="Кавказ">Кавказ</option>
+            <option value="Алтай">Алтай</option>
+            <option value="Урал">Урал</option>
+            <option value="Саяны">Саяны</option>
+            <option value="Камчатка">Камчатка</option>
+            <option value="Северный Кавказ">Северный Кавказ</option>
+            <option value="Карелия">Карелия</option>
+          </select>
+          <p>выберите из списка</p>
+        </div>
+        <div class="tour__search-field">
+          <!--<button class="tour__search-select" type="button">Дата похода<img src="/images/calendar-icon.svg"></button>-->
+          <div class="tour__date-wrapper">
+            <input class="tour__search-select tour__search-date" type="date" name="date" [(ngModel)]="selectedDate" [class.tour__date-empty]="!selectedDate">
+            @if (!selectedDate) {
+            <span class="tour__date-placeholder">Дата похода</span>
+            }
+          </div>
+          <p>укажите дату</p>
+        </div>
+        <div class="tour__search-field">
+          <!--<button class="tour__search-select" type="button">Участники<img src="/images/arrow-down-icon.svg"></button>-->
+          <select class="tour__search-select" name="participants" [(ngModel)]="selectedParticipants">
+            <option value="" disabled>Участники</option>
+            <option value="1">1 человек</option>
+            <option value="2">2 человека</option>
+            <option value="3">3 человека</option>
+            <option value="4">4 человека</option>
+            <option value="5">5 человек</option>
+            <option value="6">6 человек</option>
+            <option value="7">7 человек</option>
+          </select>
+          <p>выберите из списка</p>
+        </div>
+        <button class="tour__search-btn" type="submit" [disabled]=" !selectedLocation || !selectedDate || !selectedParticipants">
+          Найти программу
+        </button>
+      </form>
+      <div class="live-input">
+        <input class="live-input__field" type="text" name="liveText" placeholder="Живой инпут" [(ngModel)]="liveText">
+        <span class="live-input__result">{{ liveText || 'Введённый текст' }}</span>
       </div>
-      
-      <div class="tour__search-field">
-        <button class="tour__search-select" type="button">Дата похода<img src="/images/calendar-icon.svg"></button>
-        <p>укажите дату</p>
-      </div>
-      
-      <div class="tour__search-field">
-        <button class="tour__search-select" type="button">Участники<img src="/images/arrow-down-icon.svg"></button>
-        <p>выберите из списка</p>
-      </div>
-      
-      <button class="tour__search-btn" type="submit">
-        Найти программу
-      </button>
-    </form>
   </div>
 </header>
+<main class="main">
+  <section class="main__about-hike">
+    <div class="main__about-hike_pictures">
+      <img src="/images/mountain.png" alt="Гора">
+      <img src="/images/hut.png" alt="Хижина в горах">
+      <img src="/images/play-button.svg" class="play-button">
+    </div>
+    <div class="main__about-hike_text">
+      <span>о нашем походе</span>
+      <h2>Исследуйте все горные массивы мира вместе с нами</h2>
+      <p>Его корни уходят в один фрагмент классической латыни 45 года н.э., то есть более двух тысячелетий назад. Ричард
+      МакКлинток, профессор латыни из колледжа Hampden-Sydney, штат Вирджиния, взял одно из самых странных слов в Lorem Ipsum,
+      "consectetur"и занялся его поисками в классической латинской литературе.</p>
+      <button class="tour__search-btn tour_program-btn" type="button">Программа тура</button>
+    </div>
+  </section>
+  <section class="main__offer">
+      <div class="main__offer_text">
+        <span>наши предложения</span>
+        <h2>Лучшие программы для тебя</h2>
+        <p>Его корни уходят в один фрагмент классической латыни 45 года н.э., то есть более двух тысячелетий назад. Ричард МакКлинток, профессор латыни из колледжа.</p>
+        <ul class="main__offer_text__advantages">
+            @for (service of services; track service.id) {
+              <li class="main__offer_text__advantages__item">
+                <div class="main__offer_text__advantages__icon main__offer_text__advantages__icon--guide" >
+                  <img [src]="service.icon" [alt]="service.alt">
+                </div>
+                <div class="main__offer_text__advantages__text">
+                  <h3>{{ service.title }}</h3>
+                  <p>{{ service.description }}</p>
+                </div>
+              </li>
+            }
+        </ul>
+        <button class="tour__search-btn price__programs-btn" type="button">Стоимость программ</button>
+      </div>
+      <div class="main__offer_pictures">
+        <img src="/images/paper-cup.jpg" alt="Бумажный стаканчик">
+        <img src="/images/tourist.jpg" alt="Турист">
+        <img src="/images/snowmobile.jpg" alt="Мужчина на снегоходе">
+        <img src="/images/river.jpg" alt="Река">
+      </div>
+  </section>
+</main>
+}
